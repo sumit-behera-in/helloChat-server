@@ -30,7 +30,8 @@ class PendingDataSource(
             val messages = messagesCollection.find().toList()
             messages.forEach { doc: Document ->
                 try {
-                    it.send(Frame.Text(Json.encodeToString(doc)))
+                    val message: Message = doc.toMessage()
+                    it.send(Frame.Text(Json.encodeToString(message)))
                     messagesCollection.deleteOne(doc)
                 } catch (e: Exception) {
                     // Handle exception

@@ -10,10 +10,10 @@ data class Message(
     @BsonId
     val _id: String = ObjectId().toString(),
     val text: String,
-    val sender: String,
+    var sender: String,
     val receiver: String,
-    val timeStamp: Long,
-    val messageStatus: String,
+    var timeStamp: Long,
+    var messageStatus: String,
 ) {
     fun toDocument(): Document {
         return Document()
@@ -23,5 +23,29 @@ data class Message(
             .append("receiver", receiver)
             .append("timeStamp", timeStamp)
             .append("messageStatus", messageStatus)
+    }
+}
+
+fun Document.toMessage(): Message {
+    return Message(
+        _id = this.getString("_id"),
+        text = this.getString("text"),
+        sender = this.getString("sender"),
+        receiver = this.getString("receiver"),
+        timeStamp = this.getLong("timeStamp"),
+        messageStatus = this.getString("messageStatus")
+    )
+}
+
+@Serializable
+data class Response(val text: String, val receiver: String) {
+    fun toMessage(): Message {
+        return Message(
+            text = text,
+            sender = "server",
+            receiver = receiver,
+            timeStamp = System.currentTimeMillis(),
+            messageStatus = "send"
+        )
     }
 }
